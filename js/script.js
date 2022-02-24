@@ -72,6 +72,7 @@ function scoreCalculator(color) {
       highScoreCalculator();
       break;
     case redColor :
+      resetLblNumber();
       score--;
       lblScore.textContent = score + " - 1";
   }

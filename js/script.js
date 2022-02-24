@@ -14,6 +14,7 @@ const redColor = "rgb(255, 0, 0)";
 let score = 20;
 let highScore = 0;
 let randomNumber = 0;
+let trys = 6;
 
 genRandomNumber();
 
@@ -26,6 +27,11 @@ function reset() {
   resetLblMessage();
   resetLblNumber();
   resetScore();
+  resetTrys();
+}
+
+function resetTrys() {
+  trys = 6;
 }
 
 function resetScore() {
@@ -56,27 +62,34 @@ function lblMessageText(text) {
   lblMessage.textContent = text;
 }
 
-function guessFrontStyle(text, color) {
+function lblFrontStyle(text, color) {
   lblMessageText(text);
   setColorNumberAndMessage(color);
-
+  lblScore.style.color = color;
   scoreCalculator(color);
 }
 
 function scoreCalculator(color) {
-  lblScore.style.color = color;
   switch (color) {
     case greenColor:
-      score += 3;
-      lblScore.textContent = score + " + 3";
+      pointSystem(trys);
       highScoreCalculator();
       break;
     case redColor :
       resetLblNumber();
-      score--;
-      lblScore.textContent = score + " - 1";
+      pointSystem(-1);
   }
 }
+
+function pointSystem(points) {
+  score += points;
+  if (points > 0) {
+    lblScore.textContent = score + " + " + points + " ↑";
+  } else {
+    lblScore.textContent = score + "↓";
+  }
+}
+
 
 function highScoreCalculator() {
   if (score > highScore) {
@@ -86,19 +99,29 @@ function highScoreCalculator() {
 }
 
 function checkNumber() {
-  const gNum = inputGuess.value;
-  const numGuess = Number(gNum);
+  if (score !== 0) {
+    const gNum = inputGuess.value;
+    const numGuess = Number(gNum);
 
-  if (!numGuess) {
-    lblMessage.textContent = "🦤 not a valid number";
-  } else if (numGuess > randomNumber) {
-    guessFrontStyle("The number is smaller then ↓ " + numGuess, redColor);
-  } else if (numGuess < randomNumber) {
-    guessFrontStyle("The number is bigger then ↑ " + numGuess, redColor);
+    //counts 1 try
+    if (trys > 1) {
+      trys--;
+    }
+
+    if (!numGuess) {
+      lblMessage.textContent = "🦤 not a valid number";
+    } else if (numGuess > randomNumber) {
+      lblFrontStyle("The number is smaller then ↓ " + numGuess, redColor);
+    } else if (numGuess < randomNumber) {
+      lblFrontStyle("The number is bigger then ↑ " + numGuess, redColor);
+    } else {
+      lblFrontStyle("That's correct!", greenColor);
+      lblNumber.textContent = randomNumber;
+      genRandomNumber();
+      resetTrys();
+    }
   } else {
-    guessFrontStyle("That's correct!", greenColor);
-    lblNumber.textContent = randomNumber;
-    genRandomNumber();
+    lblMessageText("You don't have points for that, press Again to start a new game");
   }
 }
 
